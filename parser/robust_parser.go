@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"hash/crc32"
-	"io"
 	"kiro2api/config"
 	"kiro2api/logger"
 	"strings"
@@ -206,32 +205,6 @@ func (rp *RobustEventStreamParser) parseSingleMessageWithValidation(data []byte)
 	// 	logger.Int("payload_len", len(payloadData)))
 
 	return message, int(totalLength), nil
-}
-
-// ParseEventsFromReader 从Reader读取并解析事件流
-func (rp *RobustEventStreamParser) ParseEventsFromReader(reader io.Reader) ([]*EventStreamMessage, error) {
-	var allMessages []*EventStreamMessage
-	buf := make([]byte, 4096)
-
-	for {
-		n, err := reader.Read(buf)
-		if n > 0 {
-			messages, parseErr := rp.ParseStream(buf[:n])
-			if parseErr != nil {
-				logger.Warn("流式解析部分失败", logger.Err(parseErr))
-			}
-			allMessages = append(allMessages, messages...)
-		}
-
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return allMessages, fmt.Errorf("读取数据失败: %w", err)
-		}
-	}
-
-	return allMessages, nil
 }
 
 // validateToolUseIdIntegrity 验证工具调用中的tool_use_id完整性

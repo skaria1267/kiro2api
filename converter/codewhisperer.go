@@ -327,21 +327,6 @@ func BuildCodeWhispererRequest(anthropicReq types.AnthropicRequest, ctx *gin.Con
 
 		// 工具配置放在 UserInputMessageContext.Tools 中 (符合req.json结构)
 		cwReq.ConversationState.CurrentMessage.UserInputMessage.UserInputMessageContext.Tools = tools
-
-		// logger.Debug("工具配置已添加到UserInputMessageContext",
-		// 	logger.Int("converted_tools_count", len(tools)),
-		// 	logger.String("conversation_id", cwReq.ConversationState.ConversationId))
-
-		// 记录工具名称预览
-		// var toolNames []string
-		// for _, t := range tools {
-		// 	if t.ToolSpecification.Name != "" {
-		// 		toolNames = append(toolNames, t.ToolSpecification.Name)
-		// 	}
-		// }
-		// logger.Debug("CW工具配置",
-		// 	logger.Int("tools_count", len(tools)),
-		// 	logger.String("tool_names", strings.Join(toolNames, ",")))
 	}
 
 	// 构建历史消息
@@ -471,21 +456,6 @@ func BuildCodeWhispererRequest(anthropicReq types.AnthropicRequest, ctx *gin.Con
 	if err := validateCodeWhispererRequest(&cwReq); err != nil {
 		return cwReq, fmt.Errorf("请求验证失败: %v", err)
 	}
-
-	// logger.Debug("构建CodeWhisperer请求完成",
-	// 	logger.String("conversation_id", cwReq.ConversationState.ConversationId),
-	// 	logger.String("model_id", cwReq.ConversationState.CurrentMessage.UserInputMessage.ModelId),
-	// 	logger.String("content_preview", func() string {
-	// 		content := cwReq.ConversationState.CurrentMessage.UserInputMessage.Content
-	// 		if len(content) > 100 {
-	// 			return content[:100] + "..."
-	// 		}
-	// 		return content
-	// 	}()),
-	// 	logger.Int("images_count", len(cwReq.ConversationState.CurrentMessage.UserInputMessage.Images)),
-	// 	logger.Int("tools_count", len(cwReq.ConversationState.CurrentMessage.UserInputMessage.UserInputMessageContext.Tools)),
-	// 	logger.Int("history_count", len(cwReq.ConversationState.History)),
-	// 	logger.Bool("has_tools", len(cwReq.ConversationState.CurrentMessage.UserInputMessage.UserInputMessageContext.Tools) > 0))
 
 	return cwReq, nil
 }
