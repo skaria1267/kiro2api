@@ -21,9 +21,6 @@ const (
 
 	// RetryDelay 重试延迟
 	RetryDelay = 100 * time.Millisecond
-
-	// LogPreviewMaxLength 日志预览最大长度
-	LogPreviewMaxLength = 100
 )
 
 // Token估算常量
@@ -36,12 +33,6 @@ const (
 
 	// LongTextThreshold 长文本阈值（字符数）
 	LongTextThreshold = 1000
-)
-
-// HTTP客户端常量
-const (
-	// ResponseHeaderTimeout 响应头超时时间
-	ResponseHeaderTimeout = 5 * time.Minute
 )
 
 // EventStream解析器常量

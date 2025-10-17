@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
-	"time"
 
 	"kiro2api/auth"
 	"kiro2api/config"
@@ -239,39 +237,18 @@ func StartServer(port string, authToken string, authService *auth.AuthService) {
 	logger.Info("  POST /v1/chat/completions       - OpenAI API代理")
 	logger.Info("按Ctrl+C停止服务器")
 
-	// 获取服务器超时配置
-	readTimeout := getServerTimeoutFromEnv("SERVER_READ_TIMEOUT_MINUTES", 16) * time.Minute
-	writeTimeout := getServerTimeoutFromEnv("SERVER_WRITE_TIMEOUT_MINUTES", 16) * time.Minute
-
 	// 创建自定义HTTP服务器以支持长时间请求
 	server := &http.Server{
-		Addr:           ":" + port,
-		Handler:        r,
-		ReadTimeout:    readTimeout,              // 读取超时
-		WriteTimeout:   writeTimeout,             // 写入超时
-		IdleTimeout:    config.ServerIdleTimeout, // 空闲连接超时
-		MaxHeaderBytes: config.MaxHeaderBytes,    // 最大请求头字节数
+		Addr:    ":" + port,
+		Handler: r,
 	}
 
-	logger.Info("启动HTTP服务器",
-		logger.String("port", port),
-		logger.Duration("read_timeout", readTimeout),
-		logger.Duration("write_timeout", writeTimeout))
+	logger.Info("启动HTTP服务器", logger.String("port", port))
 
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		logger.Error("启动服务器失败", logger.Err(err), logger.String("port", port))
 		os.Exit(1)
 	}
-}
-
-// getServerTimeoutFromEnv 从环境变量获取服务器超时配置（分钟）
-func getServerTimeoutFromEnv(envVar string, defaultMinutes int) time.Duration {
-	if env := os.Getenv(envVar); env != "" {
-		if minutes, err := strconv.Atoi(env); err == nil && minutes > 0 {
-			return time.Duration(minutes)
-		}
-	}
-	return time.Duration(defaultMinutes)
 }
 
 // corsMiddleware CORS中间件

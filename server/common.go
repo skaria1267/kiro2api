@@ -75,7 +75,7 @@ func executeCodeWhispererRequest(c *gin.Context, anthropicReq types.AnthropicReq
 		return nil, err
 	}
 
-	resp, err := utils.DoSmartRequest(req, &anthropicReq)
+	resp, err := utils.DoRequest(req)
 	if err != nil {
 		handleRequestSendError(c, err)
 		return nil, err
