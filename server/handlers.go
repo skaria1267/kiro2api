@@ -290,12 +290,12 @@ func handleNonStreamRequest(c *gin.Context, anthropicReq types.AnthropicRequest,
 	// 基于实际工具数量判断是否包含工具调用
 	sawToolUse := len(allTools) > 0
 
-	logger.Debug("非流式响应处理完成",
-		addReqFields(c,
-			logger.String("text_content", textAgg[:utils.IntMin(config.LogPreviewMaxLength, len(textAgg))]),
-			logger.Int("tool_calls_count", len(allTools)),
-			logger.Bool("saw_tool_use", sawToolUse),
-		)...)
+	// logger.Debug("非流式响应处理完成",
+	// 	addReqFields(c,
+	// 		logger.String("text_content", textAgg[:utils.IntMin(config.LogPreviewMaxLength, len(textAgg))]),
+	// 		logger.Int("tool_calls_count", len(allTools)),
+	// 		logger.Bool("saw_tool_use", sawToolUse),
+	// 	)...)
 
 	// 添加文本内容
 	if textAgg != "" {
@@ -307,16 +307,16 @@ func handleNonStreamRequest(c *gin.Context, anthropicReq types.AnthropicRequest,
 
 	// 添加工具调用
 	// 工具已经在前面从toolManager获取到allTools中
-	logger.Debug("从工具生命周期管理器获取工具调用",
-		logger.Int("total_tools", len(allTools)),
-		logger.Int("parse_result_tools", len(result.GetToolCalls())))
+	// logger.Debug("从工具生命周期管理器获取工具调用",
+	// 	logger.Int("total_tools", len(allTools)),
+	// 	logger.Int("parse_result_tools", len(result.GetToolCalls())))
 
 	for _, tool := range allTools {
-		logger.Debug("添加工具调用到响应",
-			logger.String("tool_id", tool.ID),
-			logger.String("tool_name", tool.Name),
-			logger.String("tool_status", tool.Status.String()),
-			logger.Any("tool_arguments", tool.Arguments))
+		// logger.Debug("添加工具调用到响应",
+		// 	logger.String("tool_id", tool.ID),
+		// 	logger.String("tool_name", tool.Name),
+		// 	logger.String("tool_status", tool.Status.String()),
+		// 	logger.Any("tool_arguments", tool.Arguments))
 
 		// 创建标准的tool_use块，确保包含完整的状态信息
 		toolUseBlock := map[string]any{
@@ -332,21 +332,21 @@ func handleNonStreamRequest(c *gin.Context, anthropicReq types.AnthropicRequest,
 		}
 
 		// 添加详细的调试日志，验证tool_use块格式
-		if toolUseBlockJSON, err := utils.SafeMarshal(toolUseBlock); err == nil {
-			logger.Debug("发送给Claude CLI的tool_use块详细结构",
-				logger.String("tool_id", tool.ID),
-				logger.String("tool_name", tool.Name),
-				logger.String("tool_use_json", string(toolUseBlockJSON)),
-				logger.String("input_type", fmt.Sprintf("%T", tool.Arguments)),
-				logger.Any("arguments_value", tool.Arguments))
-		}
+		// if toolUseBlockJSON, err := utils.SafeMarshal(toolUseBlock); err == nil {
+		// 	logger.Debug("发送给Claude CLI的tool_use块详细结构",
+		// 		logger.String("tool_id", tool.ID),
+		// 		logger.String("tool_name", tool.Name),
+		// 		logger.String("tool_use_json", string(toolUseBlockJSON)),
+		// 		logger.String("input_type", fmt.Sprintf("%T", tool.Arguments)),
+		// 		logger.Any("arguments_value", tool.Arguments))
+		// }
 
 		contexts = append(contexts, toolUseBlock)
 
 		// 记录工具调用完成状态，帮助客户端识别工具调用已完成
-		logger.Debug("工具调用已添加到响应",
-			logger.String("tool_id", tool.ID),
-			logger.String("tool_name", tool.Name))
+		// logger.Debug("工具调用已添加到响应",
+		// 	logger.String("tool_id", tool.ID),
+		// 	logger.String("tool_name", tool.Name))
 	}
 
 	// 使用新的stop_reason管理器，确保符合Claude官方规范
@@ -362,15 +362,14 @@ func handleNonStreamRequest(c *gin.Context, anthropicReq types.AnthropicRequest,
 		outputTokens = 1
 	}
 
-	stopReasonManager.SetActualTokensUsed(outputTokens)
 	stopReasonManager.UpdateToolCallStatus(sawToolUse, sawToolUse)
 	stopReason := stopReasonManager.DetermineStopReason()
 
-	logger.Debug("非流式响应stop_reason决策",
-		logger.String("stop_reason", stopReason),
-		logger.String("description", GetStopReasonDescription(stopReason)),
-		logger.Bool("saw_tool_use", sawToolUse),
-		logger.Int("output_tokens", outputTokens))
+	// logger.Debug("非流式响应stop_reason决策",
+	// 	logger.String("stop_reason", stopReason),
+	// 	logger.String("description", GetStopReasonDescription(stopReason)),
+	// 	logger.Bool("saw_tool_use", sawToolUse),
+	// 	logger.Int("output_tokens", outputTokens))
 
 	anthropicResp := map[string]any{
 		"content":       contexts,
@@ -385,13 +384,14 @@ func handleNonStreamRequest(c *gin.Context, anthropicReq types.AnthropicRequest,
 		},
 	}
 
-	logger.Debug("非流式响应最终数据",
-		logger.String("stop_reason", stopReason),
-		logger.Int("content_blocks", len(contexts)))
+	// logger.Debug("非流式响应最终数据",
+	// 	logger.String("stop_reason", stopReason),
+	// 	logger.Int("content_blocks", len(contexts)))
 
 	logger.Debug("下发非流式响应",
 		addReqFields(c,
 			logger.String("direction", "downstream_send"),
+			logger.Any("contexts", contexts),
 			logger.Bool("saw_tool_use", sawToolUse),
 			logger.Int("content_count", len(contexts)),
 		)...)

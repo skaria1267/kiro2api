@@ -191,10 +191,10 @@ func (ssm *SSEStateManager) handleContentBlockStart(c *gin.Context, sender Strea
 		ssm.nextBlockIndex = index + 1
 	}
 
-	logger.Debug("内容块已启动",
-		logger.Int("index", index),
-		logger.String("type", blockType),
-		logger.String("tool_use_id", toolUseID))
+	// logger.Debug("内容块已启动",
+	// 	logger.Int("index", index),
+	// 	logger.String("type", blockType),
+	// 	logger.String("tool_use_id", toolUseID))
 
 	return sender.SendEvent(c, eventData)
 }

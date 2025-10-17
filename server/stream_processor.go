@@ -215,11 +215,11 @@ func (ctx *StreamProcessorContext) sendFinalEvents() error {
 	hasActiveTools := len(ctx.toolUseIdByBlockIndex) > 0
 	hasCompletedTools := len(ctx.completedToolUseIds) > 0
 
-	logger.Debug("更新工具调用状态",
-		logger.Bool("has_active_tools", hasActiveTools),
-		logger.Bool("has_completed_tools", hasCompletedTools),
-		logger.Int("active_count", len(ctx.toolUseIdByBlockIndex)),
-		logger.Int("completed_count", len(ctx.completedToolUseIds)))
+	// logger.Debug("更新工具调用状态",
+	// 	logger.Bool("has_active_tools", hasActiveTools),
+	// 	logger.Bool("has_completed_tools", hasCompletedTools),
+	// 	logger.Int("active_count", len(ctx.toolUseIdByBlockIndex)),
+	// 	logger.Int("completed_count", len(ctx.completedToolUseIds)))
 
 	ctx.stopReasonManager.UpdateToolCallStatus(hasActiveTools, hasCompletedTools)
 
@@ -235,9 +235,6 @@ func (ctx *StreamProcessorContext) sendFinalEvents() error {
 	if outputTokens < config.MinOutputTokens && ctx.totalOutputChars > 0 {
 		outputTokens = config.MinOutputTokens
 	}
-
-	// 设置实际使用的tokens
-	ctx.stopReasonManager.SetActualTokensUsed(outputTokens)
 
 	// 确定stop_reason
 	stopReason := ctx.stopReasonManager.DetermineStopReason()
