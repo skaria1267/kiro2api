@@ -15,7 +15,6 @@ import (
 // RobustEventStreamParser 带CRC校验和错误恢复的解析器
 type RobustEventStreamParser struct {
 	headerParser *HeaderParser
-	strictMode   bool
 	errorCount   int
 	maxErrors    int
 	crcTable     *crc32.Table
@@ -25,10 +24,9 @@ type RobustEventStreamParser struct {
 }
 
 // NewRobustEventStreamParser 创建健壮的事件流解析器
-func NewRobustEventStreamParser(strictMode bool) *RobustEventStreamParser {
+func NewRobustEventStreamParser() *RobustEventStreamParser {
 	return &RobustEventStreamParser{
 		headerParser: NewHeaderParser(),
-		strictMode:   strictMode,
 		maxErrors:    config.ParserMaxErrors,
 		crcTable:     crc32.MakeTable(crc32.IEEE),
 		buffer:       &bytes.Buffer{},
@@ -190,11 +188,6 @@ func (rp *RobustEventStreamParser) parseSingleMessageWithValidation(data []byte)
 		}
 	}
 
-	// 验证头部 - 宽松验证
-	if err := rp.headerParser.ValidateHeaders(headers); err != nil {
-		logger.Warn("头部验证失败，但继续处理", logger.Err(err))
-	}
-
 	message := &EventStreamMessage{
 		Headers:     headers,
 		Payload:     payloadData,
@@ -224,8 +217,8 @@ func (rp *RobustEventStreamParser) ParseEventsFromReader(reader io.Reader) ([]*E
 		n, err := reader.Read(buf)
 		if n > 0 {
 			messages, parseErr := rp.ParseStream(buf[:n])
-			if parseErr != nil && rp.strictMode {
-				return allMessages, parseErr
+			if parseErr != nil {
+				logger.Warn("流式解析部分失败", logger.Err(parseErr))
 			}
 			allMessages = append(allMessages, messages...)
 		}
@@ -436,9 +429,6 @@ func (rp *RobustEventStreamParser) parseStreamWithBuffer(data []byte) ([]*EventS
 		// 解析消息
 		message, _, err := rp.parseSingleMessageWithValidation(messageData)
 		if err != nil {
-			if rp.strictMode {
-				return messages, err
-			}
 			logger.Warn("消息解析失败", logger.Err(err))
 			rp.errorCount++
 			continue

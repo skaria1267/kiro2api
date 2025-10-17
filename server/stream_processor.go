@@ -64,7 +64,7 @@ func NewStreamProcessorContext(
 		sseStateManager:       NewSSEStateManager(false),
 		stopReasonManager:     NewStopReasonManager(req),
 		tokenEstimator:        utils.NewTokenEstimator(),
-		compliantParser:       parser.NewCompliantEventStreamParser(false),
+		compliantParser:       parser.NewCompliantEventStreamParser(),
 		toolUseIdByBlockIndex: make(map[int]string),
 		completedToolUseIds:   make(map[string]bool),
 	}

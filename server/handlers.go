@@ -214,8 +214,8 @@ func handleNonStreamRequest(c *gin.Context, anthropicReq types.AnthropicRequest,
 	}
 
 	// 使用新的符合AWS规范的解析器，但在非流式模式下增加超时保护
-	compliantParser := parser.NewCompliantEventStreamParser(false) // 宽松模式
-	compliantParser.SetMaxErrors(5)                                // 限制最大错误次数以防死循环
+	compliantParser := parser.NewCompliantEventStreamParser()
+	compliantParser.SetMaxErrors(5) // 限制最大错误次数以防死循环
 
 	// 为非流式解析添加超时保护
 	result, err := func() (*parser.ParseResult, error) {
