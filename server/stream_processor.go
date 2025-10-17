@@ -184,9 +184,6 @@ func (ctx *StreamProcessorContext) processToolUseStop(dataMap map[string]any) {
 		// 解决：先添加到completedToolUseIds，保持工具调用的证据
 		ctx.completedToolUseIds[toolId] = true
 
-		// logger.Debug("工具执行完成",
-		// 	logger.String("tool_id", toolId),
-		// 	logger.Int("block_index", idx))
 		delete(ctx.toolUseIdByBlockIndex, idx)
 	} else {
 		logger.Debug("非tool_use或未知索引的内容块结束",
@@ -318,13 +315,6 @@ func (esp *EventStreamProcessor) ProcessEventStream(reader io.Reader) error {
 			}
 
 			esp.ctx.totalProcessedEvents += len(events)
-			// logger.Debug("解析到符合规范的CW事件批次",
-			// 	addReqFields(esp.ctx.c,
-			// 		logger.String("direction", "upstream_response"),
-			// 		logger.Int("batch_events", len(events)),
-			// 		logger.Int("read_bytes", n),
-			// 		logger.Bool("has_parse_error", parseErr != nil),
-			// 	)...)
 
 			// 处理每个事件
 			for _, event := range events {
@@ -377,14 +367,8 @@ func (esp *EventStreamProcessor) processEvent(event parser.SSEEvent) error {
 
 	case "content_block_stop":
 		esp.ctx.processToolUseStop(dataMap)
-		// logger.Debug("转发内容块结束", logger.Int("index", extractIndex(dataMap)))
 
 	case "message_delta":
-		// if delta, ok := dataMap["delta"].(map[string]any); ok {
-		// 	if sr, _ := delta["stop_reason"].(string); sr != "" {
-		// 		logger.Debug("转发消息增量", logger.String("stop_reason", sr))
-		// 	}
-		// }
 
 	case "exception":
 		// 处理上游异常事件，检查是否需要映射为max_tokens

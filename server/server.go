@@ -139,25 +139,6 @@ func StartServer(port string, authToken string, authService *auth.AuthService) {
 			return
 		}
 
-		// logger.Debug("请求解析成功",
-		// 	logger.String("model", anthropicReq.Model),
-		// 	logger.Bool("stream", anthropicReq.Stream),
-		// 	logger.Int("max_tokens", anthropicReq.MaxTokens),
-		// 	logger.Int("messages_count", len(anthropicReq.Messages)),
-		// 	logger.Int("tools_count", len(anthropicReq.Tools)))
-
-		// 详细记录工具信息以调试
-		// for i, tool := range anthropicReq.Tools {
-		// 	descPreview := tool.Description
-		// 	if len(descPreview) > 100 {
-		// 		descPreview = descPreview[:100] + "..."
-		// 	}
-		// 	logger.Debug("工具详情",
-		// 		logger.Int("index", i),
-		// 		logger.String("name", tool.Name),
-		// 		logger.String("description", descPreview))
-		// }
-
 		// 验证请求的有效性
 		if len(anthropicReq.Messages) == 0 {
 			logger.Error("请求中没有消息")

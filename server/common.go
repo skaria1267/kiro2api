@@ -75,15 +75,6 @@ func executeCodeWhispererRequest(c *gin.Context, anthropicReq types.AnthropicReq
 		return nil, err
 	}
 
-	// 上游请求即将发送（带方向和会话标识）
-	// logger.Debug("发送上游请求",
-	// 	addReqFields(c,
-	// 		logger.String("direction", "upstream_request"),
-	// 		logger.String("url", req.URL.String()),
-	// 		logger.Bool("stream", isStream),
-	// 		logger.String("model", anthropicReq.Model),
-	// 	)...)
-
 	resp, err := utils.DoSmartRequest(req, &anthropicReq)
 	if err != nil {
 		handleRequestSendError(c, err)
