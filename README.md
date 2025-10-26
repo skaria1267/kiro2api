@@ -10,7 +10,7 @@
 
 ## 核心特性
 
-### 1. Claude Code 原生集成
+### 1. Claude Code 
 
 ```bash
 # 一行配置，立即享受本地代理
